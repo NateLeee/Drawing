@@ -9,11 +9,12 @@
 import SwiftUI
 
 
-struct Arc: Shape {
-    // var radius: CGFloat
+struct Arc: InsettableShape {
     var startAngle: Double
     var endAngle: Double
     var clockwise: Bool = true
+    
+    var insetAmount: CGFloat = 0
     
     func path(in rect: CGRect) -> Path {
         // Solution to counter-intuivie swift drawing defaults
@@ -24,13 +25,19 @@ struct Arc: Shape {
 
         path.addArc(
             center: CGPoint(x: rect.midX, y: rect.midY),
-            radius: rect.width / 2,
+            radius: rect.width / 2 - insetAmount,
             startAngle: Angle(degrees: modifiedStart),
             endAngle: Angle(degrees: modifiedEnd),
             clockwise: !clockwise
         )
         
         return path
+    }
+    
+    func inset(by amount: CGFloat) -> some InsettableShape {
+        var arc = self
+        arc.insetAmount += amount
+        return arc
     }
 }
 
@@ -51,16 +58,10 @@ struct Triangle: Shape {
 
 struct ContentView: View {
     var body: some View {
-        ZStack {
-            Triangle()
-                .stroke(Color.blue.opacity(0.3), style: StrokeStyle(lineWidth: 10, lineCap: .round, lineJoin: .bevel))
-                .frame(width: 150, height: 150)
-            
-            Arc(startAngle: 0, endAngle: 120, clockwise: true)
-                .stroke(Color.red.opacity(0.3), style: StrokeStyle(lineWidth: 9, lineCap: .round))
-                .frame(width: 200, height: 200)
-            
-        }
+        Arc(startAngle: -90, endAngle: 90)
+            //.stroke(Color.blue, style: StrokeStyle(lineWidth: 20, lineCap: .butt, lineJoin: .bevel))
+            .strokeBorder(Color.blue, style: StrokeStyle(lineWidth: 20, lineCap: .butt, lineJoin: .bevel))
+        
     }
 }
 
