@@ -56,67 +56,51 @@ struct Triangle: Shape {
 }
 
 struct Flower: Shape {
-    // How much to move this petal away from the center
-    var petalOffset: Double
-    
-    // How wide to make each petal
-    var petalWidth: Double
+    var pedalWidth: CGFloat
+    var pedalOffset: CGFloat
     
     func path(in rect: CGRect) -> Path {
         var path = Path()
         
-        // Count from 0 up to pi * 2, moving up pi / 8 each time
-        for number in stride(from: 0, to: CGFloat.pi * 2, by: CGFloat.pi / 2) { // ✅
-            // rotate the petal by the current value of our loop
-            let rotation = CGAffineTransform(rotationAngle: number) // ✅
+        for rotationDegree in stride(from: 0, to: CGFloat.pi * 2, by: CGFloat.pi / 8) {
+            let rotation = CGAffineTransform(rotationAngle: rotationDegree)
+            let position = rotation.concatenating(CGAffineTransform(translationX: rect.width / 2, y: rect.height / 2))
             
-            // move the petal to be at the center of our view
-            let position = rotation.concatenating(
-                CGAffineTransform(
-                    translationX: rect.width / 2,
-                    y: rect.height / 2)
-            )
+            // Draw an ellipse then
+            let pedal = Path(ellipseIn: CGRect(x: pedalOffset, y: 0, width: pedalWidth, height: rect.width / 2))
+            let rotatedPedal = pedal.applying(position)
             
-            // create a path for this petal using our properties plus a fixed Y and height
-            let originalPetal = Path(
-                ellipseIn: CGRect(
-                    x: CGFloat(petalOffset),
-                    y: 0,
-                    width: CGFloat(petalWidth),
-                    height: rect.width / 2)
-            )
-            
-            // apply our rotation/position transformation to the petal
-            let rotatedPetal = originalPetal.applying(position)
-            
-            // add it to our main path
-            path.addPath(rotatedPetal)
+            path.addPath(rotatedPedal)
         }
         
         return path
     }
+    
+    
 }
 
 struct ContentView: View {
-    @State private var petalOffset: Double = 0
-    @State private var petalWidth = 100.0
+    
+    @State private var pedalWidth: Double = 30
+    @State private var pedalOffset: Double = 30
     
     var body: some View {
         VStack {
-            Flower(petalOffset: petalOffset, petalWidth: petalWidth)
-                //.fill(Color.red, style: FillStyle(eoFill: true, antialiased: true))
-                .stroke(Color.blue, lineWidth: 1)
-                .padding(.horizontal)
+            Text("Hell0")
+                .padding()
             
-            Text("Offset")
-            Slider(value: $petalOffset, in: -40...40)
+            Flower(pedalWidth: CGFloat(pedalWidth), pedalOffset: CGFloat(pedalOffset))
+                .fill(Color.blue, style: FillStyle(eoFill: true))
                 .padding([.horizontal, .bottom])
             
-            Text("Width")
-            Slider(value: $petalWidth, in: 0...100)
+            Text("Pedal Offset")
+            Slider(value: $pedalOffset, in: -40 ... 40)
+                .padding([.horizontal, .bottom])
+            
+            Text("Pedal Width")
+            Slider(value: $pedalWidth, in: 1 ... 100)
                 .padding([.horizontal, .bottom])
         }
-        
     }
 }
 
