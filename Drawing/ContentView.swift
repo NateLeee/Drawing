@@ -17,15 +17,17 @@ struct Arc: Shape {
     
     func path(in rect: CGRect) -> Path {
         // Solution to counter-intuivie swift drawing defaults
+        let modifiedStart = startAngle - 90
+        let modifiedEnd = endAngle - 90
         
         var path = Path()
 
         path.addArc(
             center: CGPoint(x: rect.midX, y: rect.midY),
             radius: rect.width / 2,
-            startAngle: Angle(degrees: startAngle),
-            endAngle: Angle(degrees: endAngle),
-            clockwise: clockwise
+            startAngle: Angle(degrees: modifiedStart),
+            endAngle: Angle(degrees: modifiedEnd),
+            clockwise: !clockwise
         )
         
         return path
@@ -54,7 +56,7 @@ struct ContentView: View {
                 .stroke(Color.blue.opacity(0.3), style: StrokeStyle(lineWidth: 10, lineCap: .round, lineJoin: .bevel))
                 .frame(width: 150, height: 150)
             
-            Arc(startAngle: 0, endAngle: 100)
+            Arc(startAngle: 0, endAngle: 120, clockwise: true)
                 .stroke(Color.red.opacity(0.3), style: StrokeStyle(lineWidth: 9, lineCap: .round))
                 .frame(width: 200, height: 200)
             
