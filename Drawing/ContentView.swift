@@ -41,7 +41,6 @@ struct Arc: InsettableShape {
     }
 }
 
-
 struct Triangle: Shape {
     func path(in rect: CGRect) -> Path {
         var path = Path()
@@ -87,7 +86,17 @@ struct ContentView: View {
     var body: some View {
         VStack {
             Text("Hell0")
+                .frame(width: 300, height: 100)
+                .border(ImagePaint(
+                    image: Image("example"),
+                    sourceRect: CGRect(x: 0.22, y: 0.15, width: 0.8, height: 0.7),
+                    scale: 0.3
+                ), width: 40)
                 .padding()
+            
+            Capsule()
+                .strokeBorder(ImagePaint(image: Image("example"), scale: 0.2), lineWidth: 40)
+                .frame(width: 250, height: 100)
             
             Flower(pedalWidth: CGFloat(pedalWidth), pedalOffset: CGFloat(pedalOffset))
                 .fill(Color.blue, style: FillStyle(eoFill: true))
