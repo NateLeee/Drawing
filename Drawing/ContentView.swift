@@ -78,37 +78,44 @@ struct Flower: Shape {
     
 }
 
-struct ContentView: View {
+struct ColorCyclingCircle: View {
+    var amount = 0.0
+    var steps = 100
     
-    @State private var pedalWidth: Double = 30
-    @State private var pedalOffset: Double = 30
+    var body: some View {
+        ZStack {
+            ForEach(0 ..< steps) { value in
+                Circle()
+                    .inset(by: CGFloat(value) * 1.2)
+                    .strokeBorder(self.color(for: value, brightness: 1), lineWidth: 2)
+            }
+        }
+    }
+    
+    func color(for value: Int, brightness: Double) -> Color {
+        var targetHue = Double(value) / Double(self.steps) + self.amount
+        
+        if targetHue > 1 {
+            targetHue -= 1
+        }
+        
+        return Color(hue: targetHue, saturation: 1, brightness: brightness)
+    }
+}
+
+
+struct ContentView: View {
+    @State private var colorCycle = 0.0
     
     var body: some View {
         VStack {
-            Text("Hell0")
-                .frame(width: 300, height: 100)
-                .border(ImagePaint(
-                    image: Image("example"),
-                    sourceRect: CGRect(x: 0.22, y: 0.15, width: 0.8, height: 0.7),
-                    scale: 0.3
-                ), width: 40)
-                .padding()
+            ColorCyclingCircle(amount: self.colorCycle)
+                .frame(width: 300, height: 300)
+                .padding(.bottom, 54)
             
-            Capsule()
-                .strokeBorder(ImagePaint(image: Image("example"), scale: 0.2), lineWidth: 40)
-                .frame(width: 250, height: 100)
-            
-            Flower(pedalWidth: CGFloat(pedalWidth), pedalOffset: CGFloat(pedalOffset))
-                .fill(Color.blue, style: FillStyle(eoFill: true))
-                .padding([.horizontal, .bottom])
-            
-            Text("Pedal Offset")
-            Slider(value: $pedalOffset, in: -40 ... 40)
-                .padding([.horizontal, .bottom])
-            
-            Text("Pedal Width")
-            Slider(value: $pedalWidth, in: 1 ... 100)
-                .padding([.horizontal, .bottom])
+            Text("Color Cycles")
+            Slider(value: $colorCycle)
+                .padding([.bottom, .horizontal])
         }
     }
 }
