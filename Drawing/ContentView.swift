@@ -128,18 +128,78 @@ struct Trapezoid: Shape {
     }
 }
 
+struct CheckerBoard: Shape {
+    var rows: Int
+    var cols: Int
+    
+    var animatableData: AnimatablePair<Double, Double> {
+        get {
+            AnimatablePair(Double(rows), Double(cols))
+            
+        }
+        set {
+            rows = Int(newValue.first)
+            cols = Int(newValue.second)
+        }
+    }
+    
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        
+        let widthPerGrid: CGFloat = rect.width / CGFloat(cols)
+        let heightPerGrid: CGFloat = rect.height / CGFloat(rows)
+        
+        // Draw rectangles
+        for row in 0 ..< rows {
+            for col in 0 ..< cols {
+                if (row + col).isMultiple(of: 2) {
+                    // Should draw a rectangle
+                    let startX = CGFloat(col) * widthPerGrid
+                    let startY = CGFloat(row) * heightPerGrid
+                    
+                    // Move to the initial point
+                    path.move(to: CGPoint(x: startX, y: startY))
+                    
+                    // Actually draw a rectangle
+                    path.addLine(to: CGPoint(x: startX, y: startY + heightPerGrid))
+                    path.addLine(to: CGPoint(x: startX + widthPerGrid, y: startY + heightPerGrid))
+                    path.addLine(to: CGPoint(x: startX + widthPerGrid, y: startY))
+                    path.addLine(to: CGPoint(x: startX, y: startY))
+                    
+                }
+            }
+        }
+        
+        //        path.move(to: CGPoint(x: rect.minX, y: rect.minY))
+        //        path.addLine(to: CGPoint(x: 20, y: 0))
+        //        path.addLine(to: CGPoint(x: 20, y: 20))
+        //        path.addLine(to: CGPoint(x: 0, y: 20))
+        //        path.addLine(to: CGPoint(x: 0, y: 0))
+        //
+        //        path.move(to: CGPoint(x: 40, y: 0))
+        //        path.addLine(to: CGPoint(x: 60, y: 0))
+        //        path.addLine(to: CGPoint(x: 60, y: 20))
+        //        path.addLine(to: CGPoint(x: 40, y: 20))
+        //        path.addLine(to: CGPoint(x: 40, y: 0))
+        
+        
+        return path
+    }
+}
+
 struct ContentView: View {
-    @State private var amount: CGFloat = 10
+    @State private var rows: Int = 4
+    @State private var cols: Int = 4
     
     var body: some View {
-        VStack {
-            Trapezoid(insetAmount: amount)
-                .frame(width: 300, height: 200)
-                .onTapGesture {
-                    withAnimation(.easeIn) {
-                        self.amount = CGFloat.random(in: 0 ... 100)
-                    }
-            }
+        CheckerBoard(rows: rows, cols: cols)
+            .frame(width: 300, height: 300)
+            .foregroundColor(.blue)
+            .onTapGesture {
+                withAnimation(.linear) {
+                    self.rows = Int.random(in: 2 ... 8)
+                    self.cols = Int.random(in: 2 ... 8)
+                }
         }
     }
 }
