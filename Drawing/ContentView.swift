@@ -237,19 +237,25 @@ struct Spirograph: Shape {
 struct Arrow: Shape {
     var length: CGFloat
     var width: CGFloat
+    var thickness: CGFloat
+    
+    public var animatableData: CGFloat {
+        get { thickness }
+        set { thickness = newValue }
+    }
     
     func path(in rect: CGRect) -> Path {
         var path = Path()
         
         path.move(to: CGPoint(x: rect.midX, y: rect.minY))
-        path.addLine(to: CGPoint(x: rect.midX - 5 - width, y: rect.minY + 20))
-        path.addLine(to: CGPoint(x: rect.midX - 5, y: rect.minY + 20))
+        path.addLine(to: CGPoint(x: rect.midX - thickness - width, y: rect.minY + 20))
+        path.addLine(to: CGPoint(x: rect.midX - thickness, y: rect.minY + 20))
         
-        path.addLine(to: CGPoint(x: rect.midX - 5, y: rect.minY + 20 + length))
-        path.addLine(to: CGPoint(x: rect.midX + 5, y: rect.minY + 20 + length))
+        path.addLine(to: CGPoint(x: rect.midX - thickness, y: rect.minY + 20 + length))
+        path.addLine(to: CGPoint(x: rect.midX + thickness, y: rect.minY + 20 + length))
         
-        path.addLine(to: CGPoint(x: rect.midX + 5, y: rect.minY + 20))
-        path.addLine(to: CGPoint(x: rect.midX + 5 + width, y: rect.minY + 20))
+        path.addLine(to: CGPoint(x: rect.midX + thickness, y: rect.minY + 20))
+        path.addLine(to: CGPoint(x: rect.midX + thickness + width, y: rect.minY + 20))
         path.addLine(to: CGPoint(x: rect.midX, y: rect.minY))
         
         return path
@@ -261,10 +267,11 @@ struct ContentView: View {
     @State private var rotationAngle: Double = 0
     @State private var arrowLength: CGFloat = 80
     @State private var arrowWidth: CGFloat = 5
+    @State private var arrowThickness: CGFloat = 5
     
     var body: some View {
         VStack {
-            Arrow(length: arrowLength, width: arrowWidth)
+            Arrow(length: arrowLength, width: arrowWidth, thickness: arrowThickness)
                 .frame(width: 300, height: 300)
                 .foregroundColor(.blue)
                 .rotationEffect(Angle(degrees: rotationAngle))
@@ -278,6 +285,9 @@ struct ContentView: View {
                 Text("Arrow Width")
                     .padding(.horizontal)
                 Slider(value: $arrowWidth, in: 3 ... 20)
+                    .padding(.horizontal)
+                
+                Stepper("Arrow Thickness", value: $arrowThickness.animation(.easeIn), in: 5 ... 11, step: 3)
                     .padding(.horizontal)
                 
                 Text("Rotation")
