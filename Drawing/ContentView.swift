@@ -113,13 +113,7 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             Image("example")
-                .resizable()
-                .scaledToFill()
-                
-            
-            Rectangle()
-                .fill(Color.blue)
-                .blendMode(.multiply)
+                .colorMultiply(.blue)
         }
         .frame(width: 200, height: 150)
         .clipped()
