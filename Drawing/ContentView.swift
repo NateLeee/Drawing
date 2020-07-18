@@ -107,26 +107,33 @@ struct ColorCyclingCircle: View {
     }
 }
 
+struct Trapezoid: Shape {
+    var insetAmount: CGFloat
+    
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        
+        path.move(to: CGPoint(x: rect.minX + insetAmount, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.maxX - insetAmount, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.minX + insetAmount, y: rect.minY))
+        
+        return path
+    }
+}
 
 struct ContentView: View {
-    @State private var amount: CGFloat = 0
+    @State private var amount: CGFloat = 10
     
     var body: some View {
         VStack {
-            Image("example-2")
-                .resizable()
-                .scaledToFill()
-                .frame(width: 300, height: 300)
-                .blur(radius: (1 - amount) * 5)
-                .saturation(Double(amount))
-            
-            Slider(value: $amount, in: 0 ... 1)
-                .padding()
-            
+            Trapezoid(insetAmount: amount)
+                .frame(width: 300, height: 200)
+                .onTapGesture {
+                    self.amount = CGFloat.random(in: 0 ... 100)
+            }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.black)
-        .edgesIgnoringSafeArea(.all)
     }
 }
 
