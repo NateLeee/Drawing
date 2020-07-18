@@ -262,38 +262,72 @@ struct Arrow: Shape {
     }
 }
 
-struct ContentView: View {
+struct ColorCyclingRectangle: View {
+    var amount = 0.0
+    var steps = 100
     
-    @State private var rotationAngle: Double = 0
-    @State private var arrowLength: CGFloat = 80
-    @State private var arrowWidth: CGFloat = 5
-    @State private var arrowThickness: CGFloat = 5
+    var startPoint: UnitPoint = .top
+    var endPoint: UnitPoint = .bottom
+    
+    var body: some View {
+        ZStack {
+            ForEach(0 ..< steps) { value in
+                Rectangle()
+                    .inset(by: CGFloat(value) * 1.2)
+                    .strokeBorder(LinearGradient(gradient: Gradient(colors: [
+                        self.color(for: value, brightness: 1),
+                        self.color(for: value, brightness: 0.3)
+                    ]), startPoint: self.startPoint, endPoint: self.endPoint), lineWidth: 2)
+            }
+        }
+        .drawingGroup()
+    }
+    
+    func color(for value: Int, brightness: Double) -> Color {
+        var targetHue = Double(value) / Double(self.steps) + self.amount
+        
+        if targetHue > 1 {
+            targetHue -= 1
+        }
+        
+        return Color(hue: targetHue, saturation: 1, brightness: brightness)
+    }
+    
+}
+
+struct ContentView: View {
+    @State private var startPointSelection: UnitPoint = .top
+    @State private var endPointSelection: UnitPoint = .bottom
     
     var body: some View {
         VStack {
-            Arrow(length: arrowLength, width: arrowWidth, thickness: arrowThickness)
+            ColorCyclingRectangle(startPoint: startPointSelection, endPoint: endPointSelection)
                 .frame(width: 300, height: 300)
-                .foregroundColor(.blue)
-                .rotationEffect(Angle(degrees: rotationAngle))
+                .padding(.bottom, 45)
             
             Group {
-                Text("Arrow Length")
+                Text("Gradient Start Point")
                     .padding(.horizontal)
-                Slider(value: $arrowLength, in: 50 ... 280)
-                    .padding(.horizontal)
+                Picker(selection: $startPointSelection, label: EmptyView()) {
+                    Text("Top").tag(UnitPoint.top) // 💡 using .tag() to tackle with enums!
+                    Text("Leading").tag(UnitPoint.leading)
+                    Text("Bottom").tag(UnitPoint.bottom)
+                    Text("Trailing").tag(UnitPoint.trailing)
+                }
+                .pickerStyle(SegmentedPickerStyle())
+                .padding(.horizontal)
                 
-                Text("Arrow Width")
+                Text("Gradient End Point")
                     .padding(.horizontal)
-                Slider(value: $arrowWidth, in: 3 ... 20)
-                    .padding(.horizontal)
+                Picker(selection: $endPointSelection, label: EmptyView()) {
+                    Text("Top").tag(UnitPoint.top)
+                    Text("Leading").tag(UnitPoint.leading)
+                    Text("Bottom").tag(UnitPoint.bottom)
+                    Text("Trailing").tag(UnitPoint.trailing)
+                }
+                .pickerStyle(SegmentedPickerStyle())
+                .padding(.horizontal)
                 
-                Stepper("Arrow Thickness", value: $arrowThickness.animation(.easeIn), in: 5 ... 11, step: 3)
-                    .padding(.horizontal)
-                
-                Text("Rotation")
-                    .padding(.horizontal)
-                Slider(value: $rotationAngle, in: 0 ... 360)
-                    .padding(.horizontal)
             }
         }
     }
