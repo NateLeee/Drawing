@@ -109,35 +109,18 @@ struct ColorCyclingCircle: View {
 
 
 struct ContentView: View {
-    @State private var radius: CGFloat = 90
+    @State private var amount: CGFloat = 0
     
     var body: some View {
         VStack {
-            ZStack {
-                Circle()
-                    .frame(width: radius)
-                    .offset(x: -50, y: -80)
-                    //.foregroundColor(.red)
-                    .foregroundColor(Color(red: 1, green: 0, blue: 0))
-                    .blendMode(.screen)
-                
-                Circle()
-                    .frame(width: radius)
-                    .offset(x: 50, y: -80)
-                    //.foregroundColor(.green)
-                    .foregroundColor(Color(red: 0, green: 1, blue: 0))
-                    .blendMode(.screen)
-                
-                Circle()
-                    .frame(width: radius)
-                    //.foregroundColor(.blue)
-                    .foregroundColor(Color(red: 0, green: 0, blue: 1))
-                    .blendMode(.screen)
-                
-            }
-            .frame(width: 300, height: 300)
+            Image("example-2")
+                .resizable()
+                .scaledToFill()
+                .frame(width: 300, height: 300)
+                .blur(radius: (1 - amount) * 5)
+                .saturation(Double(amount))
             
-            Slider(value: $radius, in: 50 ... 210)
+            Slider(value: $amount, in: 0 ... 1)
                 .padding()
             
         }
