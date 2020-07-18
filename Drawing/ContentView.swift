@@ -110,6 +110,11 @@ struct ColorCyclingCircle: View {
 struct Trapezoid: Shape {
     var insetAmount: CGFloat
     
+    var animatableData: CGFloat {
+        get { insetAmount }
+        set { insetAmount = newValue }
+    }
+    
     func path(in rect: CGRect) -> Path {
         var path = Path()
         
@@ -131,7 +136,9 @@ struct ContentView: View {
             Trapezoid(insetAmount: amount)
                 .frame(width: 300, height: 200)
                 .onTapGesture {
-                    self.amount = CGFloat.random(in: 0 ... 100)
+                    withAnimation(.easeIn) {
+                        self.amount = CGFloat.random(in: 0 ... 100)
+                    }
             }
         }
     }
