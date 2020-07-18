@@ -109,18 +109,20 @@ struct ColorCyclingCircle: View {
 
 
 struct ContentView: View {
-    @State private var colorCycle = 0.0
     
     var body: some View {
-        VStack {
-            ColorCyclingCircle(amount: self.colorCycle)
-                .frame(width: 300, height: 300)
-                .padding(.bottom, 54)
+        ZStack {
+            Image("example")
+                .resizable()
+                .scaledToFill()
+                
             
-            Text("Color Cycles")
-            Slider(value: $colorCycle)
-                .padding([.bottom, .horizontal])
+            Rectangle()
+                .fill(Color.blue)
+                .blendMode(.multiply)
         }
+        .frame(width: 200, height: 150)
+        .clipped()
     }
 }
 
