@@ -234,43 +234,55 @@ struct Spirograph: Shape {
     }
 }
 
+struct Arrow: Shape {
+    var length: CGFloat
+    var width: CGFloat
+    
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        
+        path.move(to: CGPoint(x: rect.midX, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.midX - 5 - width, y: rect.minY + 20))
+        path.addLine(to: CGPoint(x: rect.midX - 5, y: rect.minY + 20))
+        
+        path.addLine(to: CGPoint(x: rect.midX - 5, y: rect.minY + 20 + length))
+        path.addLine(to: CGPoint(x: rect.midX + 5, y: rect.minY + 20 + length))
+        
+        path.addLine(to: CGPoint(x: rect.midX + 5, y: rect.minY + 20))
+        path.addLine(to: CGPoint(x: rect.midX + 5 + width, y: rect.minY + 20))
+        path.addLine(to: CGPoint(x: rect.midX, y: rect.minY))
+        
+        return path
+    }
+}
+
 struct ContentView: View {
-    @State private var innerRadius = 125.0
-    @State private var outerRadius = 75.0
-    @State private var distance = 25.0
-    @State private var amount: CGFloat = 1.0
-    @State private var hue = 0.6
+    
+    @State private var rotationAngle: Double = 0
+    @State private var arrowLength: CGFloat = 80
+    @State private var arrowWidth: CGFloat = 5
     
     var body: some View {
-        VStack(spacing: 0) {
-            Spacer()
-            
-            Spirograph(innerRadius: Int(innerRadius), outerRadius: Int(outerRadius), distance: Int(distance), amount: amount)
-                .stroke(Color(hue: hue, saturation: 1, brightness: 1), lineWidth: 1)
+        VStack {
+            Arrow(length: arrowLength, width: arrowWidth)
                 .frame(width: 300, height: 300)
-                .drawingGroup() // 109, 54, 100(!), 1.00, using metal is noticeably faster!
-            
-            Spacer()
+                .foregroundColor(.blue)
+                .rotationEffect(Angle(degrees: rotationAngle))
             
             Group {
-                Text("Inner radius: \(Int(innerRadius))")
-                Slider(value: $innerRadius, in: 10...150, step: 1)
-                    .padding([.horizontal, .bottom])
+                Text("Arrow Length")
+                    .padding(.horizontal)
+                Slider(value: $arrowLength, in: 50 ... 280)
+                    .padding(.horizontal)
                 
-                Text("Outer radius: \(Int(outerRadius))")
-                Slider(value: $outerRadius, in: 10...150, step: 1)
-                    .padding([.horizontal, .bottom])
+                Text("Arrow Width")
+                    .padding(.horizontal)
+                Slider(value: $arrowWidth, in: 3 ... 20)
+                    .padding(.horizontal)
                 
-                Text("Distance: \(Int(distance))")
-                Slider(value: $distance, in: 1...150, step: 1)
-                    .padding([.horizontal, .bottom])
-                
-                Text("Amount: \(amount, specifier: "%.2f")")
-                Slider(value: $amount)
-                    .padding([.horizontal, .bottom])
-                
-                Text("Color")
-                Slider(value: $hue)
+                Text("Rotation")
+                    .padding(.horizontal)
+                Slider(value: $rotationAngle, in: 0 ... 360)
                     .padding(.horizontal)
             }
         }
